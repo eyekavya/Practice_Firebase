@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import "./App.css";
 import authApi from "./utils/firebase/auth/authApi";
 import firebaseDb from "./utils/firebase/firestore/db";
@@ -28,6 +28,11 @@ function App() {
 
   async function onClickSignUp() {
     const data = await authApi.signUpWithEmailPassword(userData);
+    await firebaseDb.saveDoc(data?.user?.uid, {
+      ...userData,
+      displayName: data?.user?.displayName,
+      signedUp: firebaseDb.getTimeStamp(),
+    });
     console.log(data);
   }
 
@@ -35,6 +40,15 @@ function App() {
     const data = await authApi.signInWithEmailPassword(userData);
     console.log(data);
   }
+
+  useEffect(() => {
+    authApi.auth.onAuthStateChanged((user) => {
+      if (user) {
+        console.log(user);
+      }
+    });
+  }, []);
+
   return (
     <>
       <div>
@@ -68,13 +82,11 @@ function App() {
         />
         <button onClick={onClickSignIn}>Sign In</button>
 
-        <button
-          onClick={async () => {
-            await firebaseDb.saveDoc("utgsreid", signInData);
-          }}
-        >
-          Save Data
-        </button>
+        <br />
+
+        {authApi.auth.currentUser && (
+          <button onClick={authApi.logout}>Logout</button>
+        )}
       </div>
     </>
   );

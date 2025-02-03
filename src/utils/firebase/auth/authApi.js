@@ -27,6 +27,15 @@ async function signInWithEmailPassword(userData) {
   });
 }
 
-const authApi = { signUpWithEmailPassword, signInWithEmailPassword };
+const logout = async () => {
+  return await auth.signOut();
+};
+
+const authApi = {
+  auth,
+  signUpWithEmailPassword,
+  signInWithEmailPassword,
+  logout,
+};
 
 export default authApi;

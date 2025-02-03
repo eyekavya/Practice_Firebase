@@ -1,15 +1,19 @@
-import { doc, getFirestore, setDoc } from "firebase/firestore";
+import { doc, getFirestore, serverTimestamp, setDoc } from "firebase/firestore";
 import app from "..";
 
 const db = getFirestore(app);
 
 const saveDoc = async (uid, data) => {
   const docRef = doc(db, "user", uid);
-  return await setDoc(docRef, { ...data, rBDOM: "Dtd" }).catch((error) => {
+  return await setDoc(docRef, data).catch((error) => {
     return error;
   });
 };
 
-const firebaseDb = { saveDoc };
+const getTimeStamp = () => {
+  return serverTimestamp();
+};
+
+const firebaseDb = { saveDoc, getTimeStamp };
 
 export default firebaseDb;
